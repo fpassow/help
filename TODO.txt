@@ -1,0 +1,5 @@
+TODO
+===========
+
+Maybe the serviceWorker was needed for fetch() ?
+
