@@ -7,106 +7,94 @@ import {HashRouter,
   Link} from 'react-router-dom';
 
 
+const helpContent = window.helpContent.slice();
 
-const helpContent = window.helpContent;
+//Create url-safe id's, add them to each help topic, 
+//   and initialize a lookup object
+const lookup = {};
+helpContent.forEach((help)=>{
+  const id = encodeURIComponent(help.subject);
+  help.id = id;
+  lookup[id] = help;
+});
 
-// The FullRoster iterates over all of the players and creates
-// a link to their profile page.
-const FullRoster = () => (
+//Sort once for the page that displays in alpha order
+const sortedContent = helpContent.slice();
+sortedContent.sort(
+  (a,b)=>{
+    if (a.subject < b.subject) return -1;
+    if (a.subject > b.subject) return  1;
+    return 0;
+  }
+);
+
+const TableOfContents = () => (
+  <ul>
+    Contents
+    {helpContent.map((page)=>(
+      <li><Link to={`/view/${page.id}`}>{page.subject}</Link></li>
+    ))}
+  </ul>
+)
+
+const AlphaList = () => (
   <div>
-    <ul>
-      {
-        PlayerAPI.all().map(p => (
-          <li key={p.number}>
-            <Link to={`/roster/${p.number}`}>{p.name}</Link>
-          </li>
-        ))
-      }
-    </ul>
+    A-Z
+    {sortedContent.map((page)=>(
+      <li><Link to={`/view/${page.id}`}>{page.subject}</Link></li>
+    ))}
   </div>
 )
 
-// The Player looks up the player using the number parsed from
-// the URL's pathname. If no player is found with the given
-// number, then a "player not found" message is displayed.
-const Player = (props) => {
-  const player = PlayerAPI.get(
-    parseInt(props.match.params.number, 10)
-  )
-  if (!player) {
-    return <div>Sorry, but the player was not found</div>
+const Search = () => (
+  <div>
+    Search
+  </div>
+)
+
+const View = (props) => {
+  const id = props.match.params.id;
+  if (id && lookup[id]) {
+    const help= lookup[id];
+    return (
+      <div>
+        <h2>{help.subject}</h2>
+        <p>{help.content}</p>
+      </div>
+    );
+  } else {
+    return <div>Not found</div>;
   }
-  return (
-    <div>
-      <h1>{player.name} (#{player.number})</h1>
-      <h2>Position: {player.position}</h2>
-      <Link to='/roster'>Back</Link>
-    </div>
-  )
 }
 
-// The Roster component matches one of two different routes
-// depending on the full pathname
-const Roster = () => (
-  <Switch>
-    <Route exact path='/roster' component={FullRoster}/>
-    <Route path='/roster/:number' component={Player}/>
-  </Switch>
-)
-
-const Schedule = (props) => {
-  console.log('match.path='+props.match.path)
-  console.log('match.url='+props.match.url)
-  return (<div>
-    <ul>
-      <li>6/5 @ Evergreens</li>
-      <li>6/8 vs Kickers</li>
-      <li>6/14 @ United</li>
-    </ul>
-  </div>)
-}
-
-const Home = (props) => {
-  return (
-    <div>
-      <h1>Welcome to the Tornadoes Website!</h1>
-    </div>
-  )
-}
-
-// The Main component renders one of the three provided
-// Routes (provided that one matches). Both the /roster
-// and /schedule routes will match any pathname that starts
-// with /roster or /schedule. The / route will only match
-// when the pathname is exactly the string "/"
-const Main = () => (
-  <main>
-    <Switch>
-      <Route exact path='/' component={Home}/>
-      <Route path='/roster' component={Roster}/>
-      <Route path='/schedule' component={Schedule}/>
-    </Switch>
-  </main>
-)
-
-// The Header creates links that can be used to navigate
-// between routes.
 const Header = () => (
   <header>
     <nav>
       <ul>
-        <li><Link to='/'>Home</Link></li>
-        <li><Link to='/roster'>Roster</Link></li>
-        <li><Link to='/schedule'>Schedule</Link></li>
+        <li><Link to='/home'>Home</Link></li>
+        <li><Link to='/alpha'>A-Z</Link></li>
+        <li><Link to='/search'>Search</Link></li>
       </ul>
     </nav>
   </header>
 )
 
+const Main = () => (
+  <main>
+    <Switch>
+      <Route path='/home' component={TableOfContents}/>
+      <Route path='/alpha' component={AlphaList}/>
+      <Route path='/search' component={Search}/>
+      <Route path='/view/:id' component={View}/>
+      <Route component={TableOfContents}/>
+    </Switch>
+  </main>
+)
+
 const App = () => (
   <div>
-    <h1>{helpContent.length}</h1>
-    
+    <Header />
+    <Main />
   </div>
 )
 
