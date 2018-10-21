@@ -8,8 +8,10 @@ import {
   Link,
   Redirect} from 'react-router-dom';
 
-
+//Help content isn't compiled-in. So helpcontent.js files
+//can be freely edited and replaced.
 const helpContent = window.helpContent.slice();
+const helpContentTitle = window.helpContentTitle || "Title";
 
 //Create url-safe id's, add them to each help topic, 
 //   and initialize a lookup object
@@ -32,7 +34,7 @@ sortedContent.sort(
 
 const TableOfContents = () => (
   <ul>
-    Contents
+    <h2>Contents</h2>
     {helpContent.map((page)=>(
       <li><Link to={`/view/${page.id}`}>{page.subject}</Link></li>
     ))}
@@ -42,10 +44,12 @@ const TableOfContents = () => (
 const AlphaList = (props) => {
   return (
     <div>
-      A-Z
-      {sortedContent.map((page)=>(
-        <li><Link to={`/view/${page.id}`}>{page.subject}</Link></li>
-      ))}
+      <h2>Index</h2>
+      <ul>
+        {sortedContent.map((page)=>(
+          <li><Link to={`/view/${page.id}`}>{page.subject}</Link></li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -61,6 +65,7 @@ const Search = (props) => {
   }
   return (
     <div>
+      <h2>Search</h2>
       <SearchForm searchexpr={searchexpr} />
       <ul>
         {matches.map((help)=>(
@@ -123,10 +128,11 @@ const View = (props) => {
 
 const Header = () => (
   <header>
+    <h1>{helpContentTitle}</h1>
     <nav>
       <ul>
-        <li><Link to='/home'>Home</Link></li>
-        <li><Link to='/alpha'>A-Z</Link></li>
+        <li><Link to='/home'>Contents</Link></li>
+        <li><Link to='/alpha'>Index</Link></li>
         <li><Link to='/search'>Search</Link></li>
       </ul>
     </nav>
@@ -136,7 +142,7 @@ const Header = () => (
 const Main = () => (
   <main>
     <Switch>
-      <Route path='/home' component={TableOfContents}/>
+      <Route path='/contents' component={TableOfContents}/>
       <Route path='/alpha' component={AlphaList}/>
       <Route path='/search/:searchExpr' component={Search}/>
       <Route path='/search' component={Search}/>
@@ -152,7 +158,6 @@ const App = () => (
     <Main />
   </div>
 )
-
 
 ReactDOM.render((
   <HashRouter>

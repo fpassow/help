@@ -1,0 +1,26 @@
+body {
+	padding: 20px;
+}
+h1 {
+	margin:0;
+	margin-bottom: 10px;
+}
+ul {
+	padding:0;
+	margin:0;
+	margin-bottom:10px;
+}
+ul li {
+	list-style:none;
+}
+
+nav ul li {
+	display:inline-block;
+	border:1px solid black;
+	padding: 5px;
+	margin-right:10px;
+}
+nav ul li a {
+	text-decoration:none;
+}
+
